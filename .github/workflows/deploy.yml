@@ -1,0 +1,11 @@
+name: Deploy Lambda Function (CI/CD Practice) #ワークフローの名前
+on: #トリガー：いつ自動化処理を開始するのか
+    push: #コードをgithubにアップロードされたときに動かす
+        branches: #mainというブランチにpushがあった時だけ動かす※他のブランチは無視
+            -main
+jobs: #ワークフローが実行する仕事のリスト
+    deploy: #個別の仕事の名前「デプロイ」
+        runs-on: ubuntu-latest #実行環境は最新版のLinux
+        steps: #具体的な処理の手順を定義※上から順に
+            - name: Checkout code #VScodeからgithubにアップロードされたファイルをgithubからactionへダウンロードする
+              uses: actions/checkout@v4 #アクションという外部プログラムのcheckoutツールに処理を指示
