@@ -1,11 +1,58 @@
-name: Deploy Lambda Function (CI/CD Practice) #ワークフローの名前
-on: #トリガー：いつ自動化処理を開始するのか
-    push: #コードをgithubにアップロードされたときに動かす
-        branches: #mainというブランチにpushがあった時だけ動かす※他のブランチは無視
-            -main
-jobs: #ワークフローが実行する仕事のリスト
-    deploy: #個別の仕事の名前「デプロイ」
+#CI/CDを使ってみる
+name: Deploy Lambda Function (CI/CD Practice) #ワークフロー（どの作業をどの順番で何が実行するのか）の名前
+on: #起動のトリガー：いつ自動化処理を開始するのか
+    push: #コードがVScodeからgithubにへプッシュされたときに動かす
+        branches: #リポジトリのmainというブランチにpushがあった時だけ動かす※他のブランチは無視
+            - main
+jobs: #ワークフローが実行する仕事のリスト※ワークフローの大きな作業単位
+    deploy: #個別のジョブの名前※作業単位の一つ※main.pyをAWS Lambdaに配置する#デプロイ＝アップロード+準備
         runs-on: ubuntu-latest #実行環境は最新版のLinux
+        env: #環境変数を定義
+          BUCKET_NAME: loger_sample_bucket_20251021 #バケット名は機密性の低い設定値
         steps: #具体的な処理の手順を定義※上から順に
             - name: Checkout code #VScodeからgithubにアップロードされたファイルをgithubからactionへダウンロードする
               uses: actions/checkout@v4 #アクションという外部プログラムのcheckoutツールに処理を指示
+              #actions/checkout「GitHubが公式に提供するチェックアウト（コードの取得）ツール」
+
+            - name: Configure AWS credentials #nameは関数名みたいなもの
+              uses: aws-actions/configure-aws-credentials@v4 #usesはライブラリやモジュールをimportして使うようなもの※今回はAWS公式の認証設定ツール
+              with: #関数を呼び出す際の引数に相当する
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ap-northeast-3 #大阪リージョン
+
+            - name: Deploy Lambda and IAM Role #Lambda関数と、それに関連するIAMロールのデプロイを行う
+              uses: appleboy/lambda-action@v0.1.7 #AWS Lambdaへのデプロイを専門に行う外部ツール（GitHub Action）
+              with:
+                  function_name: loger_sample_function #Lambda関数名 
+                  zip_file: main.zip # デプロイ対象のソースコードmain.pyを自動でZIP化
+                  aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }} #LambdaデプロイツールがAWS APIを操作するための認証情報をAWSに渡して許可を取る
+                  aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws_region: ap-northeast-3
+                  role_policy_json: | #JSON形式でLambdaに設定されるIAMポリシーを定義。どのような操作が許可されているのか
+                    {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogGroup",
+                          "logs:CreateLogStream",
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": "arn:aws:logs:*:*:*"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "s3:PutObject"
+                        ],
+                        "Resource": "arn:aws:s3:::${{ env.BUCKET_NAME }}/*"
+                      }
+                    ]
+                    }
+# JSONベースのIAMポリシー言語のバージョンを指定
+# ポリシーに含まれる個別のルール※Statementのリストを開始する
+# CloudWatch Logsの操作を許可
+# S3へのアクセスを環境変数のバケット内に限定
+# 
