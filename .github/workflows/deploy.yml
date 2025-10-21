@@ -33,3 +33,4 @@ jobs: #ワークフローが実行する仕事のリスト※ワークフロー�
                   role: arn:aws:iam::49429893085:role/loger_sample_role
                   runtime: python3.12
                   handler: main.lambda_handler
+#コミットテスト用
