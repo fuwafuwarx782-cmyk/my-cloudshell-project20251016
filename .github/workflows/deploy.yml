@@ -18,7 +18,7 @@ jobs: #ワークフローが実行する仕事のリスト※ワークフロー�
               uses: aws-actions/configure-aws-credentials@v4 #usesはライブラリやモジュールをimportして使うようなもの※今回はAWS公式の認証設定ツール
               with: #関数を呼び出す際の引数に相当する
                   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-secret-access-key-id: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: ap-northeast-3 #大阪リージョン
 
             - name: Deploy Lambda and IAM Role #Lambda関数と、それに関連するIAMロールのデプロイを行う
