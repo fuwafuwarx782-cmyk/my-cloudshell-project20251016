@@ -29,4 +29,6 @@ jobs: #ワークフローが実行する仕事のリスト※ワークフロー�
                   aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }} #LambdaデプロイツールがAWS APIを操作するための認証情報をAWSに渡して許可を取る
                   aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws_region: ap-northeast-3
-                  
+                  role: arn:aws:iam::49429893085:role/loger_sample_role
+                  runtime: python3.12
+                  handler: main.lambda_handler
