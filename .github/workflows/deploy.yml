@@ -20,7 +20,8 @@ jobs: #ワークフローが実行する仕事のリスト※ワークフロー�
                   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: ap-northeast-3 #大阪リージョン
-
+            - name: Create ZIP file
+              run: zip -r main.zip main.py
             - name: Deploy Lambda and IAM Role #Lambda関数と、それに関連するIAMロールのデプロイを行う
               uses: appleboy/lambda-action@v0.1.7 #AWS Lambdaへのデプロイを専門に行う外部ツール（GitHub Action）
               with:
