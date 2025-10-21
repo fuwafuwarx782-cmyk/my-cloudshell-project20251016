@@ -17,7 +17,7 @@ jobs: #ワークフローが実行する仕事のリスト※ワークフロー�
             - name: Configure AWS credentials #nameは関数名みたいなもの
               uses: aws-actions/configure-aws-credentials@v4 #usesはライブラリやモジュールをimportして使うようなもの※今回はAWS公式の認証設定ツール
               with: #関数を呼び出す際の引数に相当する
-                  aws-access-key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: ap-northeast-3 #大阪リージョン
 
@@ -26,7 +26,7 @@ jobs: #ワークフローが実行する仕事のリスト※ワークフロー�
               with:
                   function_name: loger_sample_function #Lambda関数名 
                   zip_file: main.zip # デプロイ対象のソースコードmain.pyを自動でZIP化
-                  aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }} #LambdaデプロイツールがAWS APIを操作するための認証情報をAWSに渡して許可を取る
+                  aws_access_key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} #LambdaデプロイツールがAWS APIを操作するための認証情報をAWSに渡して許可を取る
                   aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws_region: ap-northeast-3
                   role_policy_json: | #JSON形式でLambdaに設定されるIAMポリシーを定義。どのような操作が許可されているのか
